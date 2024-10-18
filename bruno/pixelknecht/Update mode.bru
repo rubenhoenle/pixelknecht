@@ -1,0 +1,17 @@
+meta {
+  name: Update mode
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{commanderer-host}}/mode
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "enabled": false
+  }
+}
