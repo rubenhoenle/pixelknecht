@@ -2,6 +2,11 @@ result
 
 backend/flix-backend
 
+*.png
+*.jpg
+*.jpeg
+*.gif
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
