@@ -11,4 +11,29 @@ This is a command-and-control server and client implementation for the "Pixelflu
 
 Mainly getting startet with Golang, especially with asynchronous programming using channels and goroutines.
 
-The aim of this project is education, NOT to really write the best pixelflut client.
+**The aim of this project is education, NOT to really write the best pixelflut client.**
+
+## Development
+
+This project is designed for development using the [Nix package manager](https://nix.dev/manual/nix/2.24/).
+
+```bash
+# enter dev shell
+nix develop
+
+# apply code format
+nix fmt
+
+# run the pixelknecht (pixelflut-client)
+nix run
+
+# run the commanderer (CnC-Server)
+nix run .#commanderer
+```
+
+For interacting with the _Commanderer_, there is currently no frontend available.
+But there is a [Bruno](https://github.com/usebruno/bruno) collection available for interacting with the REST API.
+
+Of course you will also need a Pixelflut server for development.
+I'm using [this](https://github.com/patagonaa/pixelflut-server-dotnet) for now.
+You can just start it up in a container. See the linked repo for further instructions.
