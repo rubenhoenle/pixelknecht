@@ -6,6 +6,7 @@ import (
 )
 
 const workerPoolSize = 20
+
 func initTcpWorkerPool() {
 	for i := 0; i < workerPoolSize; i++ {
 		wg.Add(1)

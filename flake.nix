@@ -49,6 +49,8 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             go
+            nodejs_22
+            nodePackages."@angular/cli"
           ];
           shellHook = ''
             alias cover-report="go test -coverprofile cover.out && go tool cover -html=cover.out -o cover.html && xdg-open cover.html"
