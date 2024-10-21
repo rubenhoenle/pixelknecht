@@ -6,14 +6,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"image"
-	_ "image/jpeg"
-	_ "image/png"
 	"io"
 	"log"
-	"net"
 	"net/http"
-	"os"
 	"sync"
 	"time"
 )
@@ -23,24 +18,15 @@ type floodMode struct {
 	Enabled bool `json:"enabled"`
 }
 
-type floodImage struct {
-	Bytes    []string
-	HeightPX int
-	WidthPX  int
-}
-
 var wg sync.WaitGroup
 
+var queue = make(chan string)
+
 func main() {
-	conn, err := net.Dial("tcp", "localhost:1234")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer conn.Close()
+	initTcpWorkerPool()
 
 	wg.Add(1)
-	go commandHandler(conn, 3)
+	go commandHandler(3)
 
 	// wait for the goroutines to finish
 	wg.Wait()
@@ -55,7 +41,7 @@ func generateColor() string {
 	return hex.EncodeToString(buf)
 }
 
-func commandHandler(conn net.Conn, pollIntervalSec int) {
+func commandHandler(pollIntervalSec int) {
 	// define the initial mode
 	var mode floodMode
 	mode.Enabled = false
@@ -72,7 +58,7 @@ func commandHandler(conn net.Conn, pollIntervalSec int) {
 				fmt.Print("Starting flooding...")
 				ctx, cancel = context.WithCancel(context.Background())
 				wg.Add(1)
-				go draw(ctx, conn)
+				go draw(ctx)
 			} else {
 				fmt.Print("Stopping flooding...")
 				cancel()
@@ -105,63 +91,21 @@ func getModeFromCommanderer() floodMode {
 	return mode
 }
 
-func readImage(filename string) floodImage {
-	imgFile, err := os.Open(filename)
-	if err != nil {
-		fmt.Println("Error: ", err)
-		// TODO: clarify how to do proper error handling here
-		return floodImage{}
-	}
-	defer imgFile.Close()
-
-	// decode the image
-	img, _, err := image.Decode(imgFile)
-	if err != nil {
-		fmt.Println("Error decoding image:", err)
-		// TODO: clarify how to do proper error handling here
-		return floodImage{}
-	}
-
-	widthPX := img.Bounds().Dx()
-	heightPX := img.Bounds().Dy()
-
-	var rgbValues []string
-
-	for y := 0; y < heightPX; y++ {
-		for x := 0; x < widthPX; x++ {
-			// Get the color of the pixel at (x, y)
-			r, g, b, _ := img.At(x, y).RGBA()
-
-			// Convert to 8-bit RGB
-			r8 := uint8(r >> 8)
-			g8 := uint8(g >> 8)
-			b8 := uint8(b >> 8)
-
-			buf := []uint8{r8, g8, b8}
-
-			rgb := hex.EncodeToString(buf)
-			rgbValues = append(rgbValues, rgb)
-		}
-	}
-	return floodImage{HeightPX: heightPX, WidthPX: widthPX, Bytes: rgbValues}
-}
-
-func draw(ctx context.Context, conn net.Conn) {
+func draw(ctx context.Context) {
+	frames := readGif("example.gif")
+	//img := readImage("image.png")
 	for {
-		img := readImage("image.png")
 		select {
 		case <-ctx.Done(): // if cancel() execute
 			wg.Done()
 			return
 		default:
-			for y := 0; y < img.HeightPX; y++ {
-				for x := 0; x < img.WidthPX; x++ {
-					cmd := fmt.Sprintf("PX %d %d %s\n", y, x, img.Bytes[y*img.WidthPX+x])
-					_, err := conn.Write([]byte(cmd))
-					if err != nil {
-						fmt.Println(err)
-						wg.Done()
-						return
+			for idx, img := range frames {
+				fmt.Println(idx)
+				for y := 0; y < img.HeightPX; y++ {
+					for x := 0; x < img.WidthPX; x++ {
+						cmd := fmt.Sprintf("PX %d %d %s\n", y, x, img.Bytes[y*img.WidthPX+x])
+						queue <- cmd
 					}
 				}
 			}
