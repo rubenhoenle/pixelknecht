@@ -14,6 +14,8 @@ func setupRouter() *gin.Engine {
 	router := gin.Default()
 	router.GET("/api/mode", getMode)
 	router.PUT("/api/mode", updateMode)
+    //router.StaticFS("/frontend", http.Dir("/home/ruben/Developer/git/pixelknecht/commanderer-frontend/dist/commanderer-frontend/browser"))
+    router.NoRoute(gin.WrapH(http.FileServer(http.Dir("/home/ruben/Developer/git/pixelknecht/commanderer-frontend/dist/commanderer-frontend/browser"))))
 	return router
 }
 

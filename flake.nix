@@ -41,6 +41,21 @@
           vendorHash = "sha256-zPa3toUIV/P9HNE49wJc4TxfpKQtTiDWBOI9oLI0RZU=";
           src = ./commanderer;
         };
+        commanderer-frontend = pkgs.stdenv.mkDerivation {
+        name = "commanderer-frontend";
+        src = ./commanderer-frontend;
+        buildInputs = with pkgs; [
+            nodejs_22
+            nodePackages."@angular/cli"
+        ];
+        #installPhase = ''
+        buildPhase = ''
+          npm ci
+          ng build 
+          mkdir -p $out
+          cp -r dist/ $out
+        '';
+      };
       in
       {
         formatter = treefmtEval.config.build.wrapper;
@@ -60,6 +75,7 @@
         packages = flake-utils.lib.flattenTree {
           default = pixelknecht;
           commanderer = commanderer;
+          commanderer-frontend = commanderer-frontend;
         };
       }
     );
