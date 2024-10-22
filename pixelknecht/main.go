@@ -70,7 +70,7 @@ func commandHandler(pollIntervalSec int) {
 }
 
 func getModeFromCommanderer() floodMode {
-	response, err := http.Get("http://localhost:9000/mode")
+	response, err := http.Get("http://localhost:9000/api/mode")
 	if err != nil {
 		fmt.Print(err.Error())
 		// TODO: error handling

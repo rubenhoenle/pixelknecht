@@ -17,7 +17,7 @@ func TestGetMode(t *testing.T) {
 
 	// fetch the original mode using the API endpoint
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/mode", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/api/mode", nil)
 	router.ServeHTTP(w, req)
 
 	// assert the API endpoint returns the mode correctly
@@ -27,7 +27,7 @@ func TestGetMode(t *testing.T) {
 	// fetch the update mode using the API endpoint
 	mode.Enabled = false
 	w = httptest.NewRecorder()
-	req, _ = http.NewRequest(http.MethodGet, "/mode", nil)
+	req, _ = http.NewRequest(http.MethodGet, "/api/mode", nil)
 	router.ServeHTTP(w, req)
 
 	// assert the API endpoint returns the adjusted mode correctly
@@ -43,7 +43,7 @@ func TestUpdateMode(t *testing.T) {
 	// update the mode using the API endpoint
 	w := httptest.NewRecorder()
 	body := `{"enabled":false}`
-	req, _ := http.NewRequest(http.MethodPut, "/mode", strings.NewReader(body))
+	req, _ := http.NewRequest(http.MethodPut, "/api/mode", strings.NewReader(body))
 	router.ServeHTTP(w, req)
 
 	// make sure the API endpoint responds correctly
@@ -62,7 +62,7 @@ func TestUpdateModeWithInvalidBody(t *testing.T) {
 	// try to update the mode using the API endpoint with an invalid body
 	w := httptest.NewRecorder()
 	body := `{"foo":"bar}`
-	req, _ := http.NewRequest(http.MethodPut, "/mode", strings.NewReader(body))
+	req, _ := http.NewRequest(http.MethodPut, "/api/mode", strings.NewReader(body))
 	router.ServeHTTP(w, req)
 
 	// make sure the API endpoint responds correctly
