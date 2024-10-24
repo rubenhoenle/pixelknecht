@@ -16,11 +16,11 @@ func setupRouter() *gin.Engine {
 	router.PUT("/mode", updateMode)
 
 	router.GET("/", func(c *gin.Context) {
-		//c.HTML(http.StatusOK, "", Home())
 		c.Status(http.StatusOK)
-		template := Home()
+		template := Page()
 		template.Render(c.Request.Context(), c.Writer)
 	})
+    router.Static("/assets", "./assets")
 	return router
 }
 
