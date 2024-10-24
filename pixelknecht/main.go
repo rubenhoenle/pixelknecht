@@ -20,7 +20,8 @@ type floodMode struct {
 
 var wg sync.WaitGroup
 
-var queue = make(chan string)
+// create a channel with a buffer size of 10 per worker
+var queue = make(chan string, workerPoolSize*10)
 
 func main() {
 	initTcpWorkerPool()
@@ -94,21 +95,28 @@ func getModeFromCommanderer() floodMode {
 func draw(ctx context.Context) {
 	frames := readGif("example.gif")
 	//img := readImage("image.png")
+	//for {
+	idx := 0
+	img := frames[0]
 	for {
 		select {
 		case <-ctx.Done(): // if cancel() execute
 			wg.Done()
 			return
 		default:
-			for idx, img := range frames {
-				fmt.Println(idx)
-				for y := 0; y < img.HeightPX; y++ {
-					for x := 0; x < img.WidthPX; x++ {
-						cmd := fmt.Sprintf("PX %d %d %s\n", y, x, img.Bytes[y*img.WidthPX+x])
-						queue <- cmd
-					}
+			//for idx, img := range frames {
+			for y := 0; y < img.HeightPX; y++ {
+				for x := 0; x < img.WidthPX; x++ {
+					cmd := fmt.Sprintf("PX %d %d %s\n", y, x, img.Bytes[y*img.WidthPX+x])
+					queue <- cmd
 				}
 			}
+			idx++
+			if idx >= len(frames) {
+				idx = 0
+			}
+			img = frames[idx]
 		}
+		//}
 	}
 }

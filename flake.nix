@@ -37,8 +37,11 @@
         commanderer = pkgs.buildGoModule {
           name = "commanderer";
           version = "0.0.1";
+          preBuild = ''
+            ${pkgs.templ}/bin/templ generate
+          '';
           #vendorHash = pkgs.lib.fakeHash;
-          vendorHash = "sha256-zPa3toUIV/P9HNE49wJc4TxfpKQtTiDWBOI9oLI0RZU=";
+          vendorHash = "sha256-LC2frbWQzXasmGg1OKNcRZEcc47YoK7jvKhQrRQgJVA=";
           src = ./commanderer;
         };
       in
@@ -49,6 +52,8 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             go
+            templ
+            pixelnuke
           ];
           shellHook = ''
             alias cover-report="go test -coverprofile cover.out && go tool cover -html=cover.out -o cover.html && xdg-open cover.html"

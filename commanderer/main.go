@@ -14,6 +14,13 @@ func setupRouter() *gin.Engine {
 	router := gin.Default()
 	router.GET("/mode", getMode)
 	router.PUT("/mode", updateMode)
+
+	router.GET("/", func(c *gin.Context) {
+		//c.HTML(http.StatusOK, "", Home())
+		c.Status(http.StatusOK)
+		template := Home()
+		template.Render(c.Request.Context(), c.Writer)
+	})
 	return router
 }
 
