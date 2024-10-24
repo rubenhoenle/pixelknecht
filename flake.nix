@@ -49,6 +49,7 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             go
+            pixelnuke
           ];
           shellHook = ''
             alias cover-report="go test -coverprofile cover.out && go tool cover -html=cover.out -o cover.html && xdg-open cover.html"

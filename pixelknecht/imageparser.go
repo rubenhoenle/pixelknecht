@@ -7,7 +7,7 @@ import (
 	"image/gif"
 	_ "image/jpeg"
 	_ "image/png"
-	"os"
+	"net/http"
 )
 
 type floodImage struct {
@@ -16,28 +16,57 @@ type floodImage struct {
 	WidthPX  int
 }
 
-func readImage(filename string) floodImage {
-	imgFile, err := os.Open(filename)
+func readImage(imageURL string) []floodImage {
+	resp, err := http.Get(imageURL)
 	if err != nil {
-		fmt.Println("Error: ", err)
+		fmt.Println("Failed to download the image:", err)
 		// TODO: clarify how to do proper error handling here
-		return floodImage{}
+		return []floodImage{}
 	}
-	defer imgFile.Close()
+	defer resp.Body.Close()
 
-	// decode the image
-	img, _, err := image.Decode(imgFile)
+	img, format, err := image.Decode(resp.Body)
 	if err != nil {
 		fmt.Println("Error decoding image:", err)
 		// TODO: clarify how to do proper error handling here
-		return floodImage{}
+		return []floodImage{}
+	}
+	fmt.Printf("Image format: %s\n", format)
+
+	return []floodImage{parseFrame(img)}
+}
+
+func readGif(gifURL string) []floodImage {
+	resp, err := http.Get(gifURL)
+	if err != nil {
+		fmt.Println("Failed to download the image:", err)
+		// TODO: clarify how to do proper error handling here
+		return []floodImage{}
+	}
+	defer resp.Body.Close()
+
+	// Decode the GIF
+	gifImg, err := gif.DecodeAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error decoding GIF:", err)
+		return []floodImage{}
 	}
 
+	// Get the number of frames
+	numFrames := len(gifImg.Image)
+	fmt.Printf("GIF has %d frames\n", numFrames)
+
+	var frames = []floodImage{}
+	for _, frame := range gifImg.Image {
+		frames = append(frames, parseFrame(frame))
+	}
+	return frames
+}
+
+func parseFrame(img image.Image) floodImage {
+	var rgbValues []string
 	widthPX := img.Bounds().Dx()
 	heightPX := img.Bounds().Dy()
-
-	var rgbValues []string
-
 	for y := 0; y < heightPX; y++ {
 		for x := 0; x < widthPX; x++ {
 			// Get the color of the pixel at (x, y)
@@ -55,61 +84,4 @@ func readImage(filename string) floodImage {
 		}
 	}
 	return floodImage{HeightPX: heightPX, WidthPX: widthPX, Bytes: rgbValues}
-}
-
-func readGif(filename string) []floodImage {
-	// Open the GIF file
-	gifFile, err := os.Open(filename) // Replace with your GIF file path
-	if err != nil {
-		fmt.Println("Error: ", err)
-		return []floodImage{}
-	}
-	defer gifFile.Close()
-
-	// Decode the GIF
-	gifImg, err := gif.DecodeAll(gifFile)
-	if err != nil {
-		fmt.Println("Error decoding GIF:", err)
-		return []floodImage{}
-	}
-
-	// Get the number of frames
-	numFrames := len(gifImg.Image)
-	fmt.Printf("GIF has %d frames\n", numFrames)
-
-	//frames := make([]floodImage, numFrames)
-	var frames = []floodImage{}
-
-	// Loop over each frame
-	for frameIndex, frame := range gifImg.Image {
-		width := frame.Bounds().Dx()
-		height := frame.Bounds().Dy()
-
-		fmt.Printf("Frame %d dimensions: %d x %d\n", frameIndex, width, height)
-
-		var rgbValues []string
-
-		// Loop over each pixel in the frame
-		for y := 0; y < height; y++ {
-			for x := 0; x < width; x++ {
-				// Get the color of the pixel at (x, y)
-				r, g, b, _ := frame.At(x, y).RGBA()
-
-				// Convert to 8-bit RGB
-				r8 := uint8(r >> 8)
-				g8 := uint8(g >> 8)
-				b8 := uint8(b >> 8)
-
-				buf := []uint8{r8, g8, b8}
-
-				rgb := hex.EncodeToString(buf)
-				rgbValues = append(rgbValues, rgb)
-			}
-		}
-
-		// For demonstration, print the first few RGB values of the frame
-		//fmt.Printf("Frame %d RGB values: %v...\n", frameIndex, rgbValues[:9])
-		frames = append(frames, floodImage{HeightPX: height, WidthPX: width, Bytes: rgbValues})
-	}
-	return frames
 }

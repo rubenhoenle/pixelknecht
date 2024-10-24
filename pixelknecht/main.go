@@ -58,7 +58,7 @@ func commandHandler(pollIntervalSec int) {
 				fmt.Print("Starting flooding...")
 				ctx, cancel = context.WithCancel(context.Background())
 				wg.Add(1)
-				go draw(ctx)
+				go draw(ctx, 100, 20)
 			} else {
 				fmt.Print("Stopping flooding...")
 				cancel()
@@ -91,24 +91,29 @@ func getModeFromCommanderer() floodMode {
 	return mode
 }
 
-func draw(ctx context.Context) {
-	frames := readGif("example.gif")
-	//img := readImage("image.png")
+func draw(ctx context.Context, offsetY int, offsetX int) {
+	frames := readGif("https://www.icegif.com/wp-content/uploads/2022/04/icegif-626.gif")
+	//frames := []floodImage{readImage("https://wiki.hackerspaces.org/images/8/85/Hackwerk.png")}
+	idx, img := 0, frames[0]
 	for {
 		select {
 		case <-ctx.Done(): // if cancel() execute
 			wg.Done()
 			return
 		default:
-			for idx, img := range frames {
-				fmt.Println(idx)
-				for y := 0; y < img.HeightPX; y++ {
-					for x := 0; x < img.WidthPX; x++ {
-						cmd := fmt.Sprintf("PX %d %d %s\n", y, x, img.Bytes[y*img.WidthPX+x])
-						queue <- cmd
-					}
+			for y := 0; y < img.HeightPX; y++ {
+				for x := 0; x < img.WidthPX; x++ {
+					cmd := fmt.Sprintf("PX %d %d %s\n", x+offsetX, y+offsetY, img.Bytes[y*img.WidthPX+x])
+					queue <- cmd
 				}
 			}
+
+			// go to next frame
+			idx++
+			if idx >= len(frames) {
+				idx = 0
+			}
+			img = frames[idx]
 		}
 	}
 }
