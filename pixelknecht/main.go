@@ -15,7 +15,10 @@ import (
 
 // TODO: check if we can use the struct from the "commanderer" module here instead of duplicating it
 type floodMode struct {
-	Enabled bool `json:"enabled"`
+	Enabled  bool   `json:"enabled"`
+	PosY     int    `json:"posY"`
+	PosX     int    `json:"posX"`
+	ImageUrl string `json:"imageUrl"`
 }
 
 var wg sync.WaitGroup
@@ -58,7 +61,7 @@ func commandHandler(pollIntervalSec int) {
 				fmt.Print("Starting flooding...")
 				ctx, cancel = context.WithCancel(context.Background())
 				wg.Add(1)
-				go draw(ctx, 100, 20)
+				go draw(ctx, mode.PosY, mode.PosX, mode.ImageUrl)
 			} else {
 				fmt.Print("Stopping flooding...")
 				cancel()
@@ -91,9 +94,10 @@ func getModeFromCommanderer() floodMode {
 	return mode
 }
 
-func draw(ctx context.Context, offsetY int, offsetX int) {
-	frames := readGif("https://www.icegif.com/wp-content/uploads/2022/04/icegif-626.gif")
+func draw(ctx context.Context, offsetY int, offsetX int, imageUrl string) {
+	//frames := readGif("https://www.icegif.com/wp-content/uploads/2022/04/icegif-626.gif")
 	//frames := []floodImage{readImage("https://wiki.hackerspaces.org/images/8/85/Hackwerk.png")}
+	frames := readImage(imageUrl)
 	idx, img := 0, frames[0]
 	for {
 		select {
