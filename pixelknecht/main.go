@@ -56,9 +56,11 @@ func commandHandler(pollIntervalSec int) {
 		mode = getModeFromCommanderer()
 
 		// check if the mode changed in the meantime, if so, react to it
-		if previousMode.Enabled != mode.Enabled {
+		enabledToggled := previousMode.Enabled != mode.Enabled
+		posOrUrlChanged := previousMode.PosY != mode.PosY || previousMode.PosX != mode.PosX || previousMode.ImageUrl != mode.ImageUrl
+		if enabledToggled {
 			if mode.Enabled {
-				fmt.Print("Starting flooding...")
+				fmt.Println("Starting flooding...")
 				ctx, cancel = context.WithCancel(context.Background())
 				wg.Add(1)
 				go draw(ctx, mode.PosY, mode.PosX, mode.ImageUrl)
@@ -66,6 +68,12 @@ func commandHandler(pollIntervalSec int) {
 				fmt.Print("Stopping flooding...")
 				cancel()
 			}
+		} else if posOrUrlChanged {
+			fmt.Println("Restarting flooding with new params...")
+			cancel()
+			ctx, cancel = context.WithCancel(context.Background())
+			wg.Add(1)
+			go draw(ctx, mode.PosY, mode.PosX, mode.ImageUrl)
 		}
 
 		time.Sleep(time.Duration(pollIntervalSec) * time.Second)
@@ -95,8 +103,6 @@ func getModeFromCommanderer() floodMode {
 }
 
 func draw(ctx context.Context, offsetY int, offsetX int, imageUrl string) {
-	//frames := readGif("https://www.icegif.com/wp-content/uploads/2022/04/icegif-626.gif")
-	//frames := []floodImage{readImage("https://wiki.hackerspaces.org/images/8/85/Hackwerk.png")}
 	frames := readImage(imageUrl)
 	idx, img := 0, frames[0]
 	for {
