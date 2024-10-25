@@ -1,3 +1,5 @@
+[![CI/CD](https://github.com/rubenhoenle/pixelknecht/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/rubenhoenle/pixelknecht/actions/workflows/build.yml)
+
 # Commanderer & Pixelknecht
 
 Project Status: `IN PROGRESS - EARLY DEVELOPMENT`
@@ -29,11 +31,13 @@ nix run
 
 # run the commanderer (CnC-Server)
 nix run .#commanderer
+
+# start local pixelflut server for testing
+nix develop
+pixelnuke
 ```
 
 For interacting with the _Commanderer_, there is currently no frontend available.
 But there is a [Bruno](https://github.com/usebruno/bruno) collection available for interacting with the REST API.
 
-Of course you will also need a Pixelflut server for development.
-I'm using [this](https://github.com/patagonaa/pixelflut-server-dotnet) for now.
-You can just start it up in a container. See the linked repo for further instructions.
+I'm using the [pixelnuke](https://github.com/defnull/pixelflut) server for now.
