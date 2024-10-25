@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -103,7 +104,13 @@ func getModeFromCommanderer() floodMode {
 }
 
 func draw(ctx context.Context, offsetY int, offsetX int, imageUrl string) {
-	frames := readImage(imageUrl)
+	var frames []floodImage
+	if strings.HasSuffix(strings.ToLower(imageUrl), ".gif") {
+		frames = readGif(imageUrl)
+	} else {
+		frames = readImage(imageUrl)
+	}
+
 	idx, img := 0, frames[0]
 	for {
 		select {

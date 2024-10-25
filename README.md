@@ -40,4 +40,5 @@ pixelnuke
 For interacting with the _Commanderer_, there is currently no frontend available.
 But there is a [Bruno](https://github.com/usebruno/bruno) collection available for interacting with the REST API.
 
+Of course you will also need a Pixelflut server for development.
 I'm using the [pixelnuke](https://github.com/defnull/pixelflut) server for now.
