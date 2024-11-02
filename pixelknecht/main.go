@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -81,8 +82,15 @@ func commandHandler(pollIntervalSec int) {
 	}
 }
 
+func ReadEnvWithFallback(key string, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
+
 func getModeFromCommanderer() floodMode {
-	response, err := http.Get("http://localhost:9000/mode")
+	response, err := http.Get(ReadEnvWithFallback("COMMANDERER_URL", "http://commanderer.hoenle.xyz:9000") + "/mode")
 	if err != nil {
 		fmt.Print(err.Error())
 		// TODO: error handling
