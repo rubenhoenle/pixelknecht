@@ -32,6 +32,12 @@ func setupRouter() *gin.Engine {
 		router.SetTrustedProxies(nil)
 	}
 
+	router.LoadHTMLFiles("html/index.html")
+	router.Static("/css", "html/css")
+
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+	})
 	return router
 }
 
