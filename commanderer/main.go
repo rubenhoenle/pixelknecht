@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/rubenhoenle/pixelknecht/commanderer/config"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,6 +24,14 @@ func setupRouter() *gin.Engine {
 	router := gin.Default()
 	router.GET("/mode", getMode)
 	router.PUT("/mode", updateMode)
+
+	trustedProxy := config.GetTrustedProxy()
+	if trustedProxy != "" {
+		router.SetTrustedProxies([]string{trustedProxy})
+	} else {
+		router.SetTrustedProxies(nil)
+	}
+
 	return router
 }
 
