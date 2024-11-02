@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-const workerPoolSize = 200
+const workerPoolSize = 15
 
 func initTcpWorkerPool() {
 	for i := 0; i < workerPoolSize; i++ {
