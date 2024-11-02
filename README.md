@@ -53,5 +53,5 @@ nix build .#commandererContainerImage
 docker load < result
 
 # start the commanderer container
-docker run -d --name commanderer -p 9000:9000 ghcr.io/rubenhoenle/commanderer:unstable
+docker run -d --name commanderer -p 9000:9000 ghcr.io/rubenhoenle/pixelknecht/commanderer:unstable
 ```

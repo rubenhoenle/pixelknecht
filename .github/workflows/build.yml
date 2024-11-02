@@ -49,4 +49,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push the containerimage
-        run: docker push ghcr.io/rubenhoenle/commanderer:unstable
+        run: docker push ghcr.io/rubenhoenle/pixelknecht/commanderer:unstable

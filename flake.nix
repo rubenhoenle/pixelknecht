@@ -42,7 +42,7 @@
           src = ./commanderer;
         };
         commandererContainerImage = pkgs.dockerTools.buildLayeredImage {
-          name = "ghcr.io/rubenhoenle/commanderer";
+          name = "ghcr.io/rubenhoenle/pixelknecht/commanderer";
           tag = "unstable";
           config = {
             Expose = [ 9000 ];
