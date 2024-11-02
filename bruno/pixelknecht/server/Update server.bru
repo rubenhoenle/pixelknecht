@@ -1,0 +1,18 @@
+meta {
+  name: Update server
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{commanderer-host}}/api/server
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "host": "127.0.0.1",
+    "port": 1234
+  }
+}
