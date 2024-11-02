@@ -9,7 +9,50 @@
 
     const API_URL = "/mode";
 
+    function loadData() {
+
+    fetch(API_URL, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        })
+    .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error("Failed to update configuration");
+        })
+    .then(data => {
+            console.log("Response from server:", data);
+
+            document.getElementById("enable").checked = data.enabled;
+            document.getElementById("host").value = data.serverHost;
+            document.getElementById("port").value = data.serverPort;
+            document.getElementById("imageUrl").value = data.imageUrl;
+            document.getElementById("x").value = data.posX;
+            document.getElementById("y").value = data.posY;
+
+            document.getElementById("configResult").style.display = "block";
+            document.getElementById("configResult").textContent = "Configuration loaded successfully!";
+
+            document.getElementById("resultHost").textContent = data.host;
+            document.getElementById("resultPort").textContent = data.port;
+
+            const resultImage = document.getElementById("resultImage");
+            resultImage.src = data.imageUrl;
+
+            document.getElementById("configResult").style.display = "block";
+        })
+    .catch(error => {
+            console.error("Error:", error);
+            document.getElementById("configResult").style.display = "block";
+            document.getElementById("configResult").textContent = "Failed to send configuration. Please try again.";
+        });
+    }
+
     function submitConfig() {
+        const enable = document.getElementById("enable").checked;
         const host = document.getElementById("host").value;
         const port = parseInt(document.getElementById("port").value, 10);
         const imageUrl = document.getElementById("imageUrl").value;
@@ -17,7 +60,7 @@
         const y = parseInt(document.getElementById("y").value, 10);
 
     const configData = {
-            enabled: true,
+            enabled: enable,
             posY: y,
             posX: x,
             imageUrl: imageUrl,
@@ -59,6 +102,10 @@
         });
     }
 
+    window.onload = function() {
+        loadData()
+    };
+
     </script>
 </head>
 <body>
@@ -66,6 +113,12 @@
     
     <div class="config-form">
         <form id="ccForm">
+
+            <label class="switch">
+                <input id="enable" type="checkbox">
+                <span></span>
+            </label>
+
             <label for="host">Host:</label>
             <input type="text" id="host" name="host" placeholder="Enter host" required>
 
