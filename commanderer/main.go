@@ -1,11 +1,15 @@
 package main
 
 import (
+	"embed"
 	"github.com/rubenhoenle/pixelknecht/commanderer/config"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+//go:embed static/*
+var static embed.FS
 
 type floodMode struct {
 	Enabled bool `json:"enabled"`
@@ -32,12 +36,16 @@ func setupRouter() *gin.Engine {
 		router.SetTrustedProxies(nil)
 	}
 
-	router.LoadHTMLFiles("html/index.html")
-	router.Static("/css", "html/css")
-
+	router.StaticFS("/static", http.FS(static))
 	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{})
+		data, err := static.ReadFile("static/index.html")
+		if err != nil {
+			c.String(http.StatusInternalServerError, "Error reading index.html: %s", err)
+			return
+		}
+		c.Data(http.StatusOK, "text/html; charset=utf-8", data)
 	})
+
 	return router
 }
 
