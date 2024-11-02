@@ -120,10 +120,10 @@ func draw(ctx context.Context, offsetY int, offsetX int, imageUrl string) {
 		default:
 			for y := 0; y < img.HeightPX; y++ {
 				for x := 0; x < img.WidthPX; x++ {
-                    if img.Bytes[y*img.WidthPX+x] != "000000" {
-					cmd := fmt.Sprintf("PX %d %d %s\n", x+offsetX, y+offsetY, img.Bytes[y*img.WidthPX+x])
-					queue <- cmd
-                    }
+					if img.Bytes[y*img.WidthPX+x] != "000000" {
+						cmd := fmt.Sprintf("PX %d %d %s\n", x+offsetX, y+offsetY, img.Bytes[y*img.WidthPX+x])
+						queue <- cmd
+					}
 				}
 			}
 

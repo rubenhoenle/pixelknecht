@@ -7,10 +7,16 @@ import (
 )
 
 type floodMode struct {
-	Enabled  bool   `json:"enabled"`
-	PosY     int    `json:"posY"`
-	PosX     int    `json:"posX"`
+	Enabled bool `json:"enabled"`
+	// x and y offset
+	PosY int `json:"posY"`
+	PosX int `json:"posX"`
+	// the url of the image to paint
 	ImageUrl string `json:"imageUrl"`
+	// the IP/hostname of the pixelflut server
+	ServerHost string `json:"serverHost"`
+	// the port of the pixelflut server
+	ServerPort int `json:"serverPort"`
 }
 
 func setupRouter() *gin.Engine {
@@ -42,5 +48,7 @@ func updateMode(c *gin.Context) {
 	mode.PosY = updatedMode.PosY
 	mode.PosX = updatedMode.PosX
 	mode.ImageUrl = updatedMode.ImageUrl
+	mode.ServerHost = updatedMode.ServerHost
+	mode.ServerPort = updatedMode.ServerPort
 	c.IndentedJSON(http.StatusOK, mode)
 }
