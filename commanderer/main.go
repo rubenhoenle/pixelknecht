@@ -54,7 +54,7 @@ var mode floodMode
 func main() {
 	mode = floodMode{Enabled: true, PosY: 0, PosX: 0, ServerHost: "127.0.0.1", ServerPort: 1234, ImageUrl: "https://s3.sfz-aalen.space/static/hackwerk/open.png"}
 	router := setupRouter()
-	router.Run("localhost:9000")
+	router.Run(config.ReadEnvWithFallback("COMMANDERER_LISTEN_HOST", "localhost") + ":9000")
 }
 
 func getMode(c *gin.Context) {

@@ -46,6 +46,9 @@
           tag = "unstable";
           config = {
             Expose = [ 9000 ];
+            Env = [
+              "COMMANDERER_LISTEN_HOST=0.0.0.0"
+            ];
             Entrypoint = [ "${commanderer}/bin/commanderer" ];
           };
         };
