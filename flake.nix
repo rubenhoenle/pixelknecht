@@ -41,6 +41,14 @@
           vendorHash = "sha256-zPa3toUIV/P9HNE49wJc4TxfpKQtTiDWBOI9oLI0RZU=";
           src = ./commanderer;
         };
+        commandererContainerImage = pkgs.dockerTools.buildLayeredImage {
+          name = "ghcr.io/rubenhoenle/commanderer";
+          tag = "unstable";
+          config = {
+            Expose = [ 9000 ];
+            Entrypoint = [ "${commanderer}/bin/commanderer" ];
+          };
+        };
       in
       {
         formatter = treefmtEval.config.build.wrapper;
@@ -59,6 +67,7 @@
         packages = flake-utils.lib.flattenTree {
           default = pixelknecht;
           commanderer = commanderer;
+          commandererContainerImage = commandererContainerImage;
         };
       }
     );

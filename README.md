@@ -42,3 +42,16 @@ But there is a [Bruno](https://github.com/usebruno/bruno) collection available f
 
 Of course you will also need a Pixelflut server for development.
 I'm using the [pixelnuke](https://github.com/defnull/pixelflut) server for now.
+
+## Containerimage
+
+```bash
+# build the commanderer container image
+nix build .#commandererContainerImage
+
+# load the container image into docker
+docker load < result
+
+# start the commanderer container
+docker run -d --name commanderer -p 9000:9000 ghcr.io/rubenhoenle/commanderer:unstable
+```

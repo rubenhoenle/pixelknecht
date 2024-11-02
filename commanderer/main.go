@@ -38,7 +38,7 @@ func setupRouter() *gin.Engine {
 var mode floodMode
 
 func main() {
-	mode = floodMode{Enabled: true, PosY: 0, PosX: 0, ImageUrl: "https://s3.sfz-aalen.space/static/hackwerk/open.png"}
+	mode = floodMode{Enabled: true, PosY: 0, PosX: 0, ServerHost: "127.0.0.1", ServerPort: 1234, ImageUrl: "https://s3.sfz-aalen.space/static/hackwerk/open.png"}
 	router := setupRouter()
 	router.Run("localhost:9000")
 }
