@@ -2,8 +2,9 @@ package main
 
 import (
 	"embed"
-	"github.com/rubenhoenle/pixelknecht/commanderer/config"
 	"net/http"
+
+	"github.com/rubenhoenle/pixelknecht/commanderer/config"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,16 +19,14 @@ type floodMode struct {
 	PosX int `json:"posX"`
 	// the url of the image to paint
 	ImageUrl string `json:"imageUrl"`
-	// the IP/hostname of the pixelflut server
-	ServerHost string `json:"serverHost"`
-	// the port of the pixelflut server
-	ServerPort int `json:"serverPort"`
 }
 
 func setupRouter() *gin.Engine {
 	router := gin.Default()
 	router.GET("/mode", getMode)
 	router.PUT("/mode", updateMode)
+	router.GET("/api/server", getPixelflutServer)
+	router.PUT("/api/server", updatePixelflutServer)
 
 	trustedProxy := config.GetTrustedProxy()
 	if trustedProxy != "" {
@@ -52,7 +51,7 @@ func setupRouter() *gin.Engine {
 var mode floodMode
 
 func main() {
-	mode = floodMode{Enabled: true, PosY: 0, PosX: 0, ServerHost: "127.0.0.1", ServerPort: 1234, ImageUrl: "https://s3.sfz-aalen.space/static/hackwerk/open.png"}
+	mode = floodMode{Enabled: true, PosY: 0, PosX: 0, ImageUrl: "https://s3.sfz-aalen.space/static/hackwerk/open.png"}
 	router := setupRouter()
 	router.Run(config.ReadEnvWithFallback("COMMANDERER_LISTEN_HOST", "localhost") + ":9000")
 }
@@ -71,7 +70,5 @@ func updateMode(c *gin.Context) {
 	mode.PosY = updatedMode.PosY
 	mode.PosX = updatedMode.PosX
 	mode.ImageUrl = updatedMode.ImageUrl
-	mode.ServerHost = updatedMode.ServerHost
-	mode.ServerPort = updatedMode.ServerPort
 	c.IndentedJSON(http.StatusOK, mode)
 }

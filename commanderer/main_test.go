@@ -16,8 +16,6 @@ func TestGetMode(t *testing.T) {
 	mode.Enabled = true
 	mode.PosY = 45
 	mode.PosX = 10
-	mode.ServerHost = "pixelflut-host"
-	mode.ServerPort = 5555
 	mode.ImageUrl = "https://test.com/image.jpg"
 
 	// fetch the original mode using the API endpoint
@@ -27,14 +25,12 @@ func TestGetMode(t *testing.T) {
 
 	// assert the API endpoint returns the mode correctly
 	assert.Equal(t, http.StatusOK, w.Code)
-	require.JSONEq(t, `{"enabled":true,"posY":45,"posX":10,"serverHost":"pixelflut-host","serverPort":5555,"imageUrl":"https://test.com/image.jpg"}`, w.Body.String())
+	require.JSONEq(t, `{"enabled":true,"posY":45,"posX":10,"imageUrl":"https://test.com/image.jpg"}`, w.Body.String())
 
 	// update the mode directly
 	mode.Enabled = false
 	mode.PosY = 55
 	mode.PosX = 5
-	mode.ServerHost = "new-host"
-	mode.ServerPort = 3333
 	mode.ImageUrl = "https://example.com/image.png"
 
 	// fetch the updated mode using the API endpoint
@@ -44,7 +40,7 @@ func TestGetMode(t *testing.T) {
 
 	// assert the API endpoint returns the adjusted mode correctly
 	assert.Equal(t, http.StatusOK, w.Code)
-	require.JSONEq(t, `{"enabled":false,"posY":55,"posX":5,"serverHost":"new-host","serverPort":3333, "imageUrl":"https://example.com/image.png"}`, w.Body.String())
+	require.JSONEq(t, `{"enabled":false,"posY":55,"posX":5,"imageUrl":"https://example.com/image.png"}`, w.Body.String())
 }
 
 func TestUpdateMode(t *testing.T) {
@@ -53,26 +49,22 @@ func TestUpdateMode(t *testing.T) {
 	mode.Enabled = true
 	mode.PosY = 45
 	mode.PosX = 10
-	mode.ServerHost = "pixelflut-host"
-	mode.ServerPort = 5555
 	mode.ImageUrl = "https://test.com/image.jpg"
 
 	// update the mode using the API endpoint
 	w := httptest.NewRecorder()
-	body := `{"enabled":false,"posY":15,"posX":20,"serverHost":"new-host","serverPort":3333,"imageUrl":"https://example.com/image.png"}`
+	body := `{"enabled":false,"posY":15,"posX":20,"imageUrl":"https://example.com/image.png"}`
 	req, _ := http.NewRequest(http.MethodPut, "/mode", strings.NewReader(body))
 	router.ServeHTTP(w, req)
 
 	// make sure the API endpoint responds correctly
 	assert.Equal(t, http.StatusOK, w.Code)
-	require.JSONEq(t, `{"enabled":false,"posY":15,"posX":20,"serverHost":"new-host","serverPort":3333,"imageUrl":"https://example.com/image.png"}`, w.Body.String())
+	require.JSONEq(t, `{"enabled":false,"posY":15,"posX":20,"imageUrl":"https://example.com/image.png"}`, w.Body.String())
 
 	// make sure the mode was updated properly
 	assert.Equal(t, false, mode.Enabled)
 	assert.Equal(t, 15, mode.PosY)
 	assert.Equal(t, 20, mode.PosX)
-	assert.Equal(t, "new-host", mode.ServerHost)
-	assert.Equal(t, 3333, mode.ServerPort)
 	assert.Equal(t, "https://example.com/image.png", mode.ImageUrl)
 }
 
