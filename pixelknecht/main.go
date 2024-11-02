@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -35,15 +33,6 @@ func main() {
 
 	// wait for the goroutines to finish
 	wg.Wait()
-}
-
-func generateColor() string {
-	buf := make([]byte, 3)
-	_, err := rand.Read(buf)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return hex.EncodeToString(buf)
 }
 
 func commandHandler(pollIntervalSec int) {
@@ -89,8 +78,12 @@ func ReadEnvWithFallback(key string, fallback string) string {
 	return fallback
 }
 
+func getCommandererUrl() string {
+	return ReadEnvWithFallback("COMMANDERER_URL", "http://commanderer.hoenle.xyz:9000")
+}
+
 func getModeFromCommanderer() floodMode {
-	response, err := http.Get(ReadEnvWithFallback("COMMANDERER_URL", "http://commanderer.hoenle.xyz:9000") + "/mode")
+	response, err := http.Get(getCommandererUrl() + "/mode")
 	if err != nil {
 		fmt.Print(err.Error())
 		// TODO: error handling
