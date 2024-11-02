@@ -4,6 +4,7 @@ import (
 	"embed"
 	"github.com/gin-gonic/gin"
 	"github.com/rubenhoenle/pixelknecht/commanderer/config"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -32,6 +33,14 @@ func uploadFile(c *gin.Context) {
 	c.SaveUploadedFile(file, "temp-files/upload-"+strconv.FormatInt(time.Now().Unix(), 10)+".png")
 
 }
+func listFiles(c *gin.Context) {
+	files, _ := ioutil.ReadDir("./temp-files/")
+	fileList := []string{}
+	for _, f := range files {
+		fileList = append(fileList, f.Name())
+	}
+	c.JSON(http.StatusOK, gin.H{"files": fileList})
+}
 func setupRouter() *gin.Engine {
 	router := gin.Default()
 	router.GET("/mode", getMode)
@@ -39,6 +48,7 @@ func setupRouter() *gin.Engine {
 
 	router.MaxMultipartMemory = 10 << 20 // 8 MiB
 	router.POST("/upload", uploadFile)
+	router.GET("/listFiles", listFiles)
 	router.PUT("/mode", updateMode)
 
 	trustedProxy := config.GetTrustedProxy()

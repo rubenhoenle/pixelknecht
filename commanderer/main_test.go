@@ -75,7 +75,9 @@ func TestUpdateMode(t *testing.T) {
 	assert.Equal(t, 3333, mode.ServerPort)
 	assert.Equal(t, "https://example.com/image.png", mode.ImageUrl)
 }
+func TestUploadFile(t *testing.T) {
 
+}
 func TestUpdateModeWithInvalidBody(t *testing.T) {
 	router := setupRouter()
 
