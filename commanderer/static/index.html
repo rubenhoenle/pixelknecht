@@ -1,153 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Configure C&C Server</title>
-    <link rel="stylesheet" href="static/static/css/styles.css">
-    <script>
-
-    const API_URL = "/mode";
-
-    function loadData() {
-
-    fetch(API_URL, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            },
-        })
-    .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            throw new Error("Failed to update configuration");
-        })
-    .then(data => {
-            console.log("Response from server:", data);
-
-            document.getElementById("enable").checked = data.enabled;
-            document.getElementById("host").value = data.serverHost;
-            document.getElementById("port").value = data.serverPort;
-            document.getElementById("imageUrl").value = data.imageUrl;
-            document.getElementById("x").value = data.posX;
-            document.getElementById("y").value = data.posY;
-
-            document.getElementById("configResult").style.display = "block";
-            document.getElementById("configResult").textContent = "Configuration loaded successfully!";
-
-            document.getElementById("resultHost").textContent = data.host;
-            document.getElementById("resultPort").textContent = data.port;
-
-            const resultImage = document.getElementById("resultImage");
-            resultImage.src = data.imageUrl;
-
-            document.getElementById("configResult").style.display = "block";
-        })
-    .catch(error => {
-            console.error("Error:", error);
-            document.getElementById("configResult").style.display = "block";
-            document.getElementById("configResult").textContent = "Failed to send configuration. Please try again.";
-        });
-    }
-
-    function submitConfig() {
-        const enable = document.getElementById("enable").checked;
-        const host = document.getElementById("host").value;
-        const port = parseInt(document.getElementById("port").value, 10);
-        const imageUrl = document.getElementById("imageUrl").value;
-        const x = parseInt(document.getElementById("x").value, 10);
-        const y = parseInt(document.getElementById("y").value, 10);
-
-    const configData = {
-            enabled: enable,
-            posY: y,
-            posX: x,
-            imageUrl: imageUrl,
-            serverHost: host,
-            serverPort: port
-        };
-
-    fetch(API_URL, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(configData)
-        })
-    .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            throw new Error("Failed to update configuration");
-        })
-    .then(data => {
-            console.log("Response from server:", data);
-            document.getElementById("configResult").style.display = "block";
-            document.getElementById("configResult").textContent = "Configuration sent successfully!";
-
-            document.getElementById("resultHost").textContent = host;
-            document.getElementById("resultPort").textContent = port;
-
-            const resultImage = document.getElementById("resultImage");
-            resultImage.src = imageUrl;
-            resultImage.style.objectPosition = `${x} ${y}`;
-
-            document.getElementById("configResult").style.display = "block";
-        })
-    .catch(error => {
-            console.error("Error:", error);
-            document.getElementById("configResult").style.display = "block";
-            document.getElementById("configResult").textContent = "Failed to send configuration. Please try again.";
-        });
-    }
-
-    window.onload = function() {
-        loadData()
-    };
-
-    </script>
-</head>
-<body>
+    <link rel="stylesheet" href="static/static/css/styles.css" />
+    <script src="static/static/js/script.js"></script>
+  </head>
+  <body>
     <h1>Configure C&C Server</h1>
-    
+
     <div class="config-form">
-        <form id="ccForm">
+      <form>
+        <label for="host">Host:</label>
+        <input
+          type="text"
+          id="host"
+          name="host"
+          placeholder="Enter host"
+          required
+        />
 
-            <label class="switch">
-                <input id="enable" type="checkbox">
-                <span></span>
-            </label>
+        <label for="port">Port:</label>
+        <input
+          type="number"
+          id="port"
+          name="port"
+          placeholder="Enter port"
+          required
+        />
 
-            <label for="host">Host:</label>
-            <input type="text" id="host" name="host" placeholder="Enter host" required>
-
-            <label for="port">Port:</label>
-            <input type="number" id="port" name="port" placeholder="Enter port" required>
-
-            <label for="imageUrl">Image URL:</label>
-            <input type="url" id="imageUrl" name="imageUrl" placeholder="Enter image URL" required>
-
-            <label for="x">X Position</label>
-            <input type="number" id="x" name="x" placeholder="Enter X position" min="0" required>
-
-            <label for="y">Y Position</label>
-            <input type="number" id="y" name="y" placeholder="Enter Y position" min="0" required>
-
-            <br>
-            <button type="button" onclick="submitConfig()">Submit</button>
-        </form>
+        <br />
+        <button type="button" onclick="submitServerConfig()">Submit</button>
+      </form>
     </div>
 
-    <div class="config-result" id="configResult" style="display: none;">
-        <h2>Configuration Result</h2>
+    <div class="config-form">
+      <form>
+        <label class="switch">
+          <input id="enable" type="checkbox" />
+          <span></span>
+        </label>
+
+        <label for="imageUrl">Image URL:</label>
+        <input
+          type="url"
+          id="imageUrl"
+          name="imageUrl"
+          placeholder="Enter image URL"
+          required
+        />
+
+        <label for="x">X Position</label>
+        <input
+          type="number"
+          id="x"
+          name="x"
+          placeholder="Enter X position"
+          min="0"
+          required
+        />
+
+        <label for="y">Y Position</label>
+        <input
+          type="number"
+          id="y"
+          name="y"
+          placeholder="Enter Y position"
+          min="0"
+          required
+        />
+
+        <br />
+        <button type="button" onclick="submitModeConfig()">Submit</button>
+      </form>
     </div>
 
-        <p><strong>Host:</strong> <span id="resultHost"></span></p>
-        <p><strong>Port:</strong> <span id="resultPort"></span></p>
-        <div id="resultImageContainer">
-            <img id="resultImage" alt="Configured Image">
-        </div>
-</body>
+    <div class="config-result" id="configResult" style="display: none">
+      <h2>Configuration Result</h2>
+    </div>
+
+    <div id="resultImageContainer">
+      <img id="resultImage" alt="Configured Image" />
+    </div>
+  </body>
 </html>
-

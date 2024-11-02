@@ -22,7 +22,7 @@
           programs.nixpkgs-fmt.enable = true;
           programs.prettier = {
             enable = true;
-            includes = [ "*.md" "*.yaml" "*.yml" ];
+            includes = [ "*.md" "*.yaml" "*.yml" "*.html" "*.css" "*.js" ];
           };
           programs.gofmt.enable = true;
         };
