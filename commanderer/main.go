@@ -23,8 +23,8 @@ type floodMode struct {
 
 func setupRouter() *gin.Engine {
 	router := gin.Default()
-	router.GET("/mode", getMode)
-	router.PUT("/mode", updateMode)
+	router.GET("/api/mode", getMode)
+	router.PUT("/api/mode", updateMode)
 	router.GET("/api/server", getPixelflutServer)
 	router.PUT("/api/server", updatePixelflutServer)
 
