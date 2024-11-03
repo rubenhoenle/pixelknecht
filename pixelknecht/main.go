@@ -83,7 +83,7 @@ func getCommandererUrl() string {
 }
 
 func getModeFromCommanderer() floodMode {
-	response, err := http.Get(getCommandererUrl() + "/mode")
+	response, err := http.Get(getCommandererUrl() + "/api/mode")
 	if err != nil {
 		fmt.Print(err.Error())
 		// TODO: error handling

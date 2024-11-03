@@ -1,5 +1,5 @@
 const Endpoint = Object.freeze({
-  MODE_API_URL: "/mode",
+  MODE_API_URL: "/api/mode",
   SERVER_API_URL: "/api/server",
 });
 
