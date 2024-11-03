@@ -64,6 +64,7 @@
           ];
           shellHook = ''
             export COMMANDERER_URL="http://localhost:9000"
+            export COMMANDERER_TCP="localhost:8999"
             alias cover-report="go test -coverprofile cover.out && go tool cover -html=cover.out -o cover.html && xdg-open cover.html"
           '';
         };

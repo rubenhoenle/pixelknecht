@@ -2,15 +2,21 @@ package main
 
 import (
 	"embed"
-	"net/http"
-
-	"github.com/rubenhoenle/pixelknecht/commanderer/config"
-
 	"github.com/gin-gonic/gin"
+	"github.com/rubenhoenle/pixelknecht/commanderer/config"
+	"net/http"
+	"time"
 )
 
 //go:embed static/*
 var static embed.FS
+
+const (
+	port              = ":8999"
+	heartbeatInterval = 5 * time.Second  // How often we expect heartbeats
+	readTimeout       = 10 * time.Second // Timeout for missing heartbeat
+	checkInterval     = 3 * time.Second  // Interval for checking connection
+)
 
 type floodMode struct {
 	Enabled bool `json:"enabled"`
@@ -51,6 +57,7 @@ func setupRouter() *gin.Engine {
 var mode floodMode
 
 func main() {
+	go RunTcpServer()
 	mode = floodMode{Enabled: true, PosY: 0, PosX: 0, ImageUrl: "https://s3.sfz-aalen.space/static/hackwerk/open.png"}
 	router := setupRouter()
 	router.Run(config.ReadEnvWithFallback("COMMANDERER_LISTEN_HOST", "localhost") + ":9000")
