@@ -53,6 +53,16 @@ select {
   transition: background-color 0.4s;
 }
 
+#imageList {
+  display: none; /* Initially hide the image list */
+  margin-top: 10px;
+}
+#toggleImageList {
+    cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+    color: blue; /* Change color for the toggle button */
+    text-decoration: underline; /* Underline the toggle button */
+}
+
 .switch span::before {
   background-color: white;
   border-radius: 50%;
