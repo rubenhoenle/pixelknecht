@@ -15,10 +15,11 @@ import (
 
 // TODO: check if we can use the struct from the "commanderer" module here instead of duplicating it
 type floodMode struct {
-	Enabled  bool   `json:"enabled"`
-	PosY     int    `json:"posY"`
-	PosX     int    `json:"posX"`
-	ImageUrl string `json:"imageUrl"`
+	Enabled     bool    `json:"enabled"`
+	PosY        int     `json:"posY"`
+	PosX        int     `json:"posX"`
+	ScaleFactor float64 `json:"scaleFactor"`
+	ImageUrl    string  `json:"imageUrl"`
 }
 
 var wg sync.WaitGroup
@@ -48,23 +49,25 @@ func commandHandler(pollIntervalSec int) {
 
 		// check if the mode changed in the meantime, if so, react to it
 		enabledToggled := previousMode.Enabled != mode.Enabled
-		posOrUrlChanged := previousMode.PosY != mode.PosY || previousMode.PosX != mode.PosX || previousMode.ImageUrl != mode.ImageUrl
+		posChanged := previousMode.PosY != mode.PosY || previousMode.PosX != mode.PosX
+		urlChanged := previousMode.ImageUrl != mode.ImageUrl
+		scaleChanged := !CompareFloat(previousMode.ScaleFactor, mode.ScaleFactor)
 		if enabledToggled {
 			if mode.Enabled {
 				fmt.Println("Starting flooding...")
 				ctx, cancel = context.WithCancel(context.Background())
 				wg.Add(1)
-				go draw(ctx, mode.PosY, mode.PosX, mode.ImageUrl)
+				go draw(ctx, mode.PosY, mode.PosX, mode.ScaleFactor, mode.ImageUrl)
 			} else {
 				fmt.Print("Stopping flooding...")
 				cancel()
 			}
-		} else if posOrUrlChanged {
+		} else if posChanged || urlChanged || scaleChanged {
 			fmt.Println("Restarting flooding with new params...")
 			cancel()
 			ctx, cancel = context.WithCancel(context.Background())
 			wg.Add(1)
-			go draw(ctx, mode.PosY, mode.PosX, mode.ImageUrl)
+			go draw(ctx, mode.PosY, mode.PosX, mode.ScaleFactor, mode.ImageUrl)
 		}
 
 		time.Sleep(time.Duration(pollIntervalSec) * time.Second)
@@ -104,12 +107,12 @@ func getModeFromCommanderer() floodMode {
 	return mode
 }
 
-func draw(ctx context.Context, offsetY int, offsetX int, imageUrl string) {
+func draw(ctx context.Context, offsetY int, offsetX int, scaleFactor float64, imageUrl string) {
 	var frames []floodImage
 	if strings.HasSuffix(strings.ToLower(imageUrl), ".gif") {
 		frames = readGif(imageUrl)
 	} else {
-		frames = readImage(imageUrl)
+		frames = readImage(imageUrl, scaleFactor)
 	}
 
 	idx, img := 0, frames[0]
@@ -121,10 +124,8 @@ func draw(ctx context.Context, offsetY int, offsetX int, imageUrl string) {
 		default:
 			for y := 0; y < img.HeightPX; y++ {
 				for x := 0; x < img.WidthPX; x++ {
-					if img.Bytes[y*img.WidthPX+x] != "000000" {
-						cmd := fmt.Sprintf("PX %d %d %s\n", x+offsetX, y+offsetY, img.Bytes[y*img.WidthPX+x])
-						queue <- cmd
-					}
+					cmd := fmt.Sprintf("PX %d %d %s\n", x+offsetX, y+offsetY, img.Bytes[y*img.WidthPX+x])
+					queue <- cmd
 				}
 			}
 

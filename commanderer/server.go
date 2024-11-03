@@ -11,7 +11,7 @@ type pixelflutServer struct {
 	Port int    `json:"port"`
 }
 
-var server pixelflutServer = pixelflutServer{Host: "127.0.0.1", Port: 1234}
+var server pixelflutServer = pixelflutServer{Host: "127.0.0.1", Port: 1337}
 
 func getPixelflutServer(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, server)

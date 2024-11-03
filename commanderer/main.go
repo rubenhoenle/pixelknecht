@@ -17,6 +17,8 @@ type floodMode struct {
 	// x and y offset
 	PosY int `json:"posY"`
 	PosX int `json:"posX"`
+	// the scale factor for the image
+	ScaleFactor float64 `json:"scaleFactor"`
 	// the url of the image to paint
 	ImageUrl string `json:"imageUrl"`
 }
@@ -51,7 +53,7 @@ func setupRouter() *gin.Engine {
 var mode floodMode
 
 func main() {
-	mode = floodMode{Enabled: true, PosY: 0, PosX: 0, ImageUrl: "https://s3.sfz-aalen.space/static/hackwerk/open.png"}
+	mode = floodMode{Enabled: true, PosY: 0, PosX: 0, ScaleFactor: 1, ImageUrl: "https://s3.sfz-aalen.space/static/hackwerk/open.png"}
 	router := setupRouter()
 	router.Run(config.ReadEnvWithFallback("COMMANDERER_LISTEN_HOST", "localhost") + ":9000")
 }
@@ -69,6 +71,7 @@ func updateMode(c *gin.Context) {
 	mode.Enabled = updatedMode.Enabled
 	mode.PosY = updatedMode.PosY
 	mode.PosX = updatedMode.PosX
+	mode.ScaleFactor = updatedMode.ScaleFactor
 	mode.ImageUrl = updatedMode.ImageUrl
 	c.IndentedJSON(http.StatusOK, mode)
 }

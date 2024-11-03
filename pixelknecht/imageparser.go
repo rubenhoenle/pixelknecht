@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/nfnt/resize"
 	"image"
 	"image/gif"
 	_ "image/jpeg"
@@ -16,7 +17,7 @@ type floodImage struct {
 	WidthPX  int
 }
 
-func readImage(imageURL string) []floodImage {
+func readImage(imageURL string, scaleFactor float64) []floodImage {
 	resp, err := http.Get(imageURL)
 	if err != nil {
 		fmt.Println("Failed to download the image:", err)
@@ -31,7 +32,15 @@ func readImage(imageURL string) []floodImage {
 		// TODO: clarify how to do proper error handling here
 		return []floodImage{}
 	}
+
 	fmt.Printf("Image format: %s\n", format)
+
+	if !CompareFloat(1, scaleFactor) {
+		// scale the image
+		newWidth := uint(float64(img.Bounds().Dx()) * scaleFactor)
+		newHeight := uint(float64(img.Bounds().Dy()) * scaleFactor)
+		img = resize.Resize(newWidth, newHeight, img, resize.Lanczos3)
+	}
 
 	return []floodImage{parseFrame(img)}
 }
