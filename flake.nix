@@ -31,7 +31,7 @@
           name = "pixelknecht";
           version = "0.0.1";
           #vendorHash = pkgs.lib.fakeHash;
-          vendorHash = null;
+          vendorHash = "sha256-NBnkdx47qhEJXPYDlVgJPtZj+UqBHoso6vTl6wukj9s=";
           src = ./pixelknecht;
         };
         commanderer = pkgs.buildGoModule {
