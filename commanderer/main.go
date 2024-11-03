@@ -2,11 +2,12 @@ package main
 
 import (
 	"embed"
-	"net/http"
-
+  "github.com/gin-gonic/gin"
 	"github.com/rubenhoenle/pixelknecht/commanderer/config"
-
-	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 //go:embed static/*
@@ -21,9 +22,29 @@ type floodMode struct {
 	ImageUrl string `json:"imageUrl"`
 }
 
+func uploadFile(c *gin.Context) {
+	// single file
+	file, _ := c.FormFile("file")
+	// Upload the file to specific dst.
+	c.SaveUploadedFile(file, "temp-files/upload-"+strconv.FormatInt(time.Now().Unix(), 10)+".png")
+
+}
+func listFiles(c *gin.Context) {
+	files, _ := ioutil.ReadDir("./temp-files/")
+	fileList := []string{}
+	for _, f := range files {
+		fileList = append(fileList, f.Name())
+	}
+	c.JSON(http.StatusOK, gin.H{"files": fileList})
+}
 func setupRouter() *gin.Engine {
 	router := gin.Default()
 	router.GET("/mode", getMode)
+	router.StaticFS("/pictures", http.Dir("./temp-files"))
+
+	router.MaxMultipartMemory = 10 << 20 // 8 MiB
+	router.POST("/upload", uploadFile)
+	router.GET("/listFiles", listFiles)
 	router.PUT("/mode", updateMode)
 	router.GET("/api/server", getPixelflutServer)
 	router.PUT("/api/server", updatePixelflutServer)
