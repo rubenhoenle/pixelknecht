@@ -18,7 +18,7 @@ type pixelflutServer struct {
 const workerPoolSize = 15
 
 func getPixelflutServerStringFromCommanderer() string {
-	response, err := http.Get(getCommandererUrl() + "/api/server")
+	response, err := http.Get(GetCommandererUrl() + "/api/server")
 	if err != nil {
 		fmt.Print(err.Error())
 		// TODO: error handling
