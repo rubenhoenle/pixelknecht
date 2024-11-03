@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -30,6 +29,7 @@ func main() {
 
 	wg.Add(1)
 	go commandHandler(3)
+	go SendHeartbeat()
 
 	// wait for the goroutines to finish
 	wg.Wait()
@@ -71,19 +71,8 @@ func commandHandler(pollIntervalSec int) {
 	}
 }
 
-func ReadEnvWithFallback(key string, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
-}
-
-func getCommandererUrl() string {
-	return ReadEnvWithFallback("COMMANDERER_URL", "http://commanderer.hoenle.xyz:9000")
-}
-
 func getModeFromCommanderer() floodMode {
-	response, err := http.Get(getCommandererUrl() + "/mode")
+	response, err := http.Get(GetCommandererUrl() + "/mode")
 	if err != nil {
 		fmt.Print(err.Error())
 		// TODO: error handling
