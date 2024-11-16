@@ -5,23 +5,13 @@ import (
 	"net/http"
 
 	"github.com/rubenhoenle/pixelknecht/commanderer/config"
+	"github.com/rubenhoenle/pixelknecht/model"
 
 	"github.com/gin-gonic/gin"
 )
 
 //go:embed static/*
 var static embed.FS
-
-type floodMode struct {
-	Enabled bool `json:"enabled"`
-	// x and y offset
-	PosY int `json:"posY"`
-	PosX int `json:"posX"`
-	// the scale factor for the image
-	ScaleFactor float64 `json:"scaleFactor"`
-	// the url of the image to paint
-	ImageUrl string `json:"imageUrl"`
-}
 
 func setupRouter() *gin.Engine {
 	router := gin.Default()
@@ -50,10 +40,10 @@ func setupRouter() *gin.Engine {
 	return router
 }
 
-var mode floodMode
+var mode model.FloodMode
 
 func main() {
-	mode = floodMode{Enabled: true, PosY: 0, PosX: 0, ScaleFactor: 1, ImageUrl: "https://s3.sfz-aalen.space/static/hackwerk/open.png"}
+	mode = model.FloodMode{Enabled: true, PosY: 0, PosX: 0, ScaleFactor: 1, ImageUrl: "https://s3.sfz-aalen.space/static/hackwerk/open.png"}
 	router := setupRouter()
 	router.Run(config.ReadEnvWithFallback("COMMANDERER_LISTEN_HOST", "localhost") + ":9000")
 }
@@ -63,7 +53,7 @@ func getMode(c *gin.Context) {
 }
 
 func updateMode(c *gin.Context) {
-	var updatedMode floodMode
+	var updatedMode model.FloodMode
 	if err := c.BindJSON(&updatedMode); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return

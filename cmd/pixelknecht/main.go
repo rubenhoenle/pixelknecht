@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/rubenhoenle/pixelknecht/model"
 	"io"
 	"log"
 	"net/http"
@@ -12,15 +13,6 @@ import (
 	"sync"
 	"time"
 )
-
-// TODO: check if we can use the struct from the "commanderer" module here instead of duplicating it
-type floodMode struct {
-	Enabled     bool    `json:"enabled"`
-	PosY        int     `json:"posY"`
-	PosX        int     `json:"posX"`
-	ScaleFactor float64 `json:"scaleFactor"`
-	ImageUrl    string  `json:"imageUrl"`
-}
 
 var wg sync.WaitGroup
 
@@ -38,7 +30,7 @@ func main() {
 
 func commandHandler(pollIntervalSec int) {
 	// define the initial mode
-	var mode floodMode
+	var mode model.FloodMode
 	mode.Enabled = false
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -85,7 +77,7 @@ func getCommandererUrl() string {
 	return ReadEnvWithFallback("COMMANDERER_URL", "http://commanderer.hoenle.xyz:9000")
 }
 
-func getModeFromCommanderer() floodMode {
+func getModeFromCommanderer() model.FloodMode {
 	response, err := http.Get(getCommandererUrl() + "/api/mode")
 	if err != nil {
 		fmt.Print(err.Error())
@@ -98,7 +90,7 @@ func getModeFromCommanderer() floodMode {
 	}
 
 	// parse the response
-	var mode floodMode
+	var mode model.FloodMode
 	err = json.Unmarshal([]byte(string(responseData)), &mode)
 	if err != nil {
 		fmt.Println("Error:", err)
