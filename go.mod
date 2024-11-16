@@ -1,9 +1,11 @@
-module github.com/rubenhoenle/pixelknecht/commanderer
+module github.com/rubenhoenle/pixelknecht
 
 go 1.23.2
 
 require (
 	github.com/gin-gonic/gin v1.10.0
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
+	github.com/rubenhoenle/pixelknecht/commanderer v0.0.0-20241105080746-9130f492bab7
 	github.com/stretchr/testify v1.9.0
 )
 

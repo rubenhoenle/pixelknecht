@@ -31,15 +31,17 @@
           name = "pixelknecht";
           version = "0.0.1";
           #vendorHash = pkgs.lib.fakeHash;
-          vendorHash = "sha256-NBnkdx47qhEJXPYDlVgJPtZj+UqBHoso6vTl6wukj9s=";
-          src = ./pixelknecht;
+          vendorHash = "sha256-ZSdk5NzsiR1aVWtbR5EpDNpcmoMccIMGfvdKC+OW0CM=";
+          src = ./.;
+          subPackages = [ "cmd/pixelknecht" ];
         };
         commanderer = pkgs.buildGoModule {
           name = "commanderer";
           version = "0.0.1";
           #vendorHash = pkgs.lib.fakeHash;
-          vendorHash = "sha256-zPa3toUIV/P9HNE49wJc4TxfpKQtTiDWBOI9oLI0RZU=";
-          src = ./commanderer;
+          vendorHash = "sha256-ZSdk5NzsiR1aVWtbR5EpDNpcmoMccIMGfvdKC+OW0CM=";
+          src = ./.;
+          subPackages = [ "cmd/commanderer" ];
         };
         commandererContainerImage = pkgs.dockerTools.buildLayeredImage {
           name = "ghcr.io/rubenhoenle/pixelknecht/commanderer";
