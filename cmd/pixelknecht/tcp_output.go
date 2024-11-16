@@ -7,13 +7,9 @@ import (
 	"log"
 	"net"
 	"net/http"
-)
 
-// TODO: check if we can use the struct from the "commanderer" module here instead of duplicating it
-type pixelflutServer struct {
-	Host string `json:"host"`
-	Port int    `json:"port"`
-}
+	"github.com/rubenhoenle/pixelknecht/model"
+)
 
 const workerPoolSize = 15
 
@@ -30,7 +26,7 @@ func getPixelflutServerStringFromCommanderer() string {
 	}
 
 	// parse the response
-	var server pixelflutServer
+	var server model.PixelflutServer
 	err = json.Unmarshal([]byte(string(responseData)), &server)
 	if err != nil {
 		fmt.Println("Error:", err)

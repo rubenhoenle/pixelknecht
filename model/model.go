@@ -10,3 +10,8 @@ type FloodMode struct {
 	// the url of the image to paint
 	ImageUrl string `json:"imageUrl"`
 }
+
+type PixelflutServer struct {
+	Host string `json:"host"`
+	Port int    `json:"port"`
+}
