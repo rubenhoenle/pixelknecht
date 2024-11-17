@@ -15,3 +15,9 @@ type PixelflutServer struct {
 	Host string `json:"host"`
 	Port int    `json:"port"`
 }
+
+type ParsedFloodImage struct {
+	Pixels   []string
+	HeightPX int
+	WidthPX  int
+}

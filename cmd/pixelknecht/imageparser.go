@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/nfnt/resize"
+	"github.com/rubenhoenle/pixelknecht/model"
 	"image"
 	"image/gif"
 	_ "image/jpeg"
@@ -11,18 +12,12 @@ import (
 	"net/http"
 )
 
-type floodImage struct {
-	Bytes    []string
-	HeightPX int
-	WidthPX  int
-}
-
-func readImage(imageURL string, scaleFactor float64) []floodImage {
+func readImage(imageURL string, scaleFactor float64) []model.ParsedFloodImage {
 	resp, err := http.Get(imageURL)
 	if err != nil {
 		fmt.Println("Failed to download the image:", err)
 		// TODO: clarify how to do proper error handling here
-		return []floodImage{}
+		return []model.ParsedFloodImage{}
 	}
 	defer resp.Body.Close()
 
@@ -30,7 +25,7 @@ func readImage(imageURL string, scaleFactor float64) []floodImage {
 	if err != nil {
 		fmt.Println("Error decoding image:", err)
 		// TODO: clarify how to do proper error handling here
-		return []floodImage{}
+		return []model.ParsedFloodImage{}
 	}
 
 	fmt.Printf("Image format: %s\n", format)
@@ -42,15 +37,15 @@ func readImage(imageURL string, scaleFactor float64) []floodImage {
 		img = resize.Resize(newWidth, newHeight, img, resize.Lanczos3)
 	}
 
-	return []floodImage{parseFrame(img)}
+	return []model.ParsedFloodImage{parseFrame(img)}
 }
 
-func readGif(gifURL string) []floodImage {
+func readGif(gifURL string) []model.ParsedFloodImage {
 	resp, err := http.Get(gifURL)
 	if err != nil {
 		fmt.Println("Failed to download the image:", err)
 		// TODO: clarify how to do proper error handling here
-		return []floodImage{}
+		return []model.ParsedFloodImage{}
 	}
 	defer resp.Body.Close()
 
@@ -58,21 +53,21 @@ func readGif(gifURL string) []floodImage {
 	gifImg, err := gif.DecodeAll(resp.Body)
 	if err != nil {
 		fmt.Println("Error decoding GIF:", err)
-		return []floodImage{}
+		return []model.ParsedFloodImage{}
 	}
 
 	// Get the number of frames
 	numFrames := len(gifImg.Image)
 	fmt.Printf("GIF has %d frames\n", numFrames)
 
-	var frames = []floodImage{}
+	var frames = []model.ParsedFloodImage{}
 	for _, frame := range gifImg.Image {
 		frames = append(frames, parseFrame(frame))
 	}
 	return frames
 }
 
-func parseFrame(img image.Image) floodImage {
+func parseFrame(img image.Image) model.ParsedFloodImage {
 	var rgbValues []string
 	widthPX := img.Bounds().Dx()
 	heightPX := img.Bounds().Dy()
@@ -92,5 +87,5 @@ func parseFrame(img image.Image) floodImage {
 			rgbValues = append(rgbValues, rgb)
 		}
 	}
-	return floodImage{HeightPX: heightPX, WidthPX: widthPX, Bytes: rgbValues}
+	return model.ParsedFloodImage{HeightPX: heightPX, WidthPX: widthPX, Pixels: rgbValues}
 }
