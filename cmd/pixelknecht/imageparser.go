@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/nfnt/resize"
 	"github.com/rubenhoenle/pixelknecht/model"
+	"github.com/rubenhoenle/pixelknecht/pkg"
 	"image"
 	"image/gif"
 	_ "image/jpeg"
@@ -30,7 +31,7 @@ func readImage(imageURL string, scaleFactor float64) []model.ParsedFloodImage {
 
 	fmt.Printf("Image format: %s\n", format)
 
-	if !CompareFloat(1, scaleFactor) {
+	if !pkg.CompareFloat(1, scaleFactor) {
 		// scale the image
 		newWidth := uint(float64(img.Bounds().Dx()) * scaleFactor)
 		newHeight := uint(float64(img.Bounds().Dy()) * scaleFactor)

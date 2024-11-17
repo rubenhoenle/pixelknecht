@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/rubenhoenle/pixelknecht/model"
+	"github.com/rubenhoenle/pixelknecht/pkg"
 	"io"
 	"log"
 	"net/http"
@@ -43,7 +44,7 @@ func commandHandler(pollIntervalSec int) {
 		enabledToggled := previousMode.Enabled != mode.Enabled
 		posChanged := previousMode.PosY != mode.PosY || previousMode.PosX != mode.PosX
 		urlChanged := previousMode.ImageUrl != mode.ImageUrl
-		scaleChanged := !CompareFloat(previousMode.ScaleFactor, mode.ScaleFactor)
+		scaleChanged := !pkg.CompareFloat(previousMode.ScaleFactor, mode.ScaleFactor)
 		if enabledToggled {
 			if mode.Enabled {
 				fmt.Println("Starting flooding...")
