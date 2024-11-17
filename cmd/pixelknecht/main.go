@@ -100,7 +100,7 @@ func getModeFromCommanderer() model.FloodMode {
 }
 
 func draw(ctx context.Context, offsetY int, offsetX int, scaleFactor float64, imageUrl string) {
-	var frames []floodImage
+	var frames []model.ParsedFloodImage
 	if strings.HasSuffix(strings.ToLower(imageUrl), ".gif") {
 		frames = readGif(imageUrl)
 	} else {
@@ -116,7 +116,7 @@ func draw(ctx context.Context, offsetY int, offsetX int, scaleFactor float64, im
 		default:
 			for y := 0; y < img.HeightPX; y++ {
 				for x := 0; x < img.WidthPX; x++ {
-					cmd := fmt.Sprintf("PX %d %d %s\n", x+offsetX, y+offsetY, img.Bytes[y*img.WidthPX+x])
+					cmd := fmt.Sprintf("PX %d %d %s\n", x+offsetX, y+offsetY, img.Pixels[y*img.WidthPX+x])
 					queue <- cmd
 				}
 			}
