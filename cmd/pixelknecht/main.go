@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/rubenhoenle/pixelknecht/config"
+	"github.com/rubenhoenle/pixelknecht/imgparser"
 	"github.com/rubenhoenle/pixelknecht/model"
 	"github.com/rubenhoenle/pixelknecht/pkg"
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -67,19 +68,8 @@ func commandHandler(pollIntervalSec int) {
 	}
 }
 
-func ReadEnvWithFallback(key string, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
-}
-
-func getCommandererUrl() string {
-	return ReadEnvWithFallback("COMMANDERER_URL", "http://commanderer.hoenle.xyz:9000")
-}
-
 func getModeFromCommanderer() model.FloodMode {
-	response, err := http.Get(getCommandererUrl() + "/api/mode")
+	response, err := http.Get(config.GetCommandererUrl() + "/api/mode")
 	if err != nil {
 		fmt.Print(err.Error())
 		// TODO: error handling
@@ -103,9 +93,9 @@ func getModeFromCommanderer() model.FloodMode {
 func draw(ctx context.Context, offsetY int, offsetX int, scaleFactor float64, imageUrl string) {
 	var frames []model.ParsedFloodImage
 	if strings.HasSuffix(strings.ToLower(imageUrl), ".gif") {
-		frames = readGif(imageUrl)
+		frames = imgparser.ReadGif(imageUrl)
 	} else {
-		frames = readImage(imageUrl, scaleFactor)
+		frames = imgparser.ReadImage(imageUrl, scaleFactor)
 	}
 
 	idx, img := 0, frames[0]

@@ -16,13 +16,9 @@ func readEnv(key string) string {
 	}
 }
 
-func ReadEnvWithFallback(key string, fallback string) string {
+func readEnvWithFallback(key string, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}
 	return fallback
-}
-
-func GetTrustedProxy() string {
-	return readEnv("TRUSTED_PROXY")
 }

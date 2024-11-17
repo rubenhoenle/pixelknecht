@@ -8,13 +8,14 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/rubenhoenle/pixelknecht/config"
 	"github.com/rubenhoenle/pixelknecht/model"
 )
 
 const workerPoolSize = 15
 
 func getPixelflutServerStringFromCommanderer() string {
-	response, err := http.Get(getCommandererUrl() + "/api/server")
+	response, err := http.Get(config.GetCommandererUrl() + "/api/server")
 	if err != nil {
 		fmt.Print(err.Error())
 		// TODO: error handling

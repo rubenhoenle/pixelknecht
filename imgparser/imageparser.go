@@ -1,4 +1,4 @@
-package main
+package imgparser
 
 import (
 	"encoding/hex"
@@ -13,7 +13,7 @@ import (
 	"net/http"
 )
 
-func readImage(imageURL string, scaleFactor float64) []model.ParsedFloodImage {
+func ReadImage(imageURL string, scaleFactor float64) []model.ParsedFloodImage {
 	resp, err := http.Get(imageURL)
 	if err != nil {
 		fmt.Println("Failed to download the image:", err)
@@ -41,7 +41,7 @@ func readImage(imageURL string, scaleFactor float64) []model.ParsedFloodImage {
 	return []model.ParsedFloodImage{parseFrame(img)}
 }
 
-func readGif(gifURL string) []model.ParsedFloodImage {
+func ReadGif(gifURL string) []model.ParsedFloodImage {
 	resp, err := http.Get(gifURL)
 	if err != nil {
 		fmt.Println("Failed to download the image:", err)
