@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"net/http"
@@ -11,7 +11,7 @@ import (
 )
 
 func TestGetMode(t *testing.T) {
-	router := setupRouter()
+	router := SetupRouter()
 
 	mode.Enabled = true
 	mode.PosY = 45
@@ -46,7 +46,7 @@ func TestGetMode(t *testing.T) {
 }
 
 func TestUpdateMode(t *testing.T) {
-	router := setupRouter()
+	router := SetupRouter()
 
 	mode.Enabled = true
 	mode.PosY = 45
@@ -73,7 +73,7 @@ func TestUpdateMode(t *testing.T) {
 }
 
 func TestUpdateModeWithInvalidBody(t *testing.T) {
-	router := setupRouter()
+	router := SetupRouter()
 
 	mode.Enabled = true
 	mode.PosY = 45

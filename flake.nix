@@ -27,19 +27,20 @@
           programs.gofmt.enable = true;
         };
 
+        #goModVendorHash = pkgs.lib.fakeHash;
+        goModVendorHash = "sha256-1IJdLmCq2ENKM+UdyiKVg/IRu0x5zb+oQmrfgwODa/w=";
+
         pixelknecht = pkgs.buildGoModule {
           name = "pixelknecht";
           version = "0.0.1";
-          #vendorHash = pkgs.lib.fakeHash;
-          vendorHash = "sha256-ZSdk5NzsiR1aVWtbR5EpDNpcmoMccIMGfvdKC+OW0CM=";
+          vendorHash = goModVendorHash;
           src = ./.;
           subPackages = [ "cmd/pixelknecht" ];
         };
         commanderer = pkgs.buildGoModule {
           name = "commanderer";
           version = "0.0.1";
-          #vendorHash = pkgs.lib.fakeHash;
-          vendorHash = "sha256-ZSdk5NzsiR1aVWtbR5EpDNpcmoMccIMGfvdKC+OW0CM=";
+          vendorHash = goModVendorHash;
           src = ./.;
           subPackages = [ "cmd/commanderer" ];
         };
