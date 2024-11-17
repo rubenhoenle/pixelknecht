@@ -4,7 +4,7 @@ import (
 	"embed"
 	"net/http"
 
-	"github.com/rubenhoenle/pixelknecht/commanderer/config"
+	"github.com/rubenhoenle/pixelknecht/config"
 	"github.com/rubenhoenle/pixelknecht/model"
 
 	"github.com/gin-gonic/gin"
@@ -45,7 +45,7 @@ var mode model.FloodMode
 func main() {
 	mode = model.FloodMode{Enabled: true, PosY: 0, PosX: 0, ScaleFactor: 1, ImageUrl: "https://s3.sfz-aalen.space/static/hackwerk/open.png"}
 	router := setupRouter()
-	router.Run(config.ReadEnvWithFallback("COMMANDERER_LISTEN_HOST", "localhost") + ":9000")
+	router.Run(config.GetListenerUrl())
 }
 
 func getMode(c *gin.Context) {
