@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"net/http"
@@ -11,7 +11,7 @@ import (
 )
 
 func TestGetServer(t *testing.T) {
-	router := setupRouter()
+	router := SetupRouter()
 
 	server.Host = "1.1.1.1"
 	server.Port = 1234
@@ -40,7 +40,7 @@ func TestGetServer(t *testing.T) {
 }
 
 func TestUpdateServer(t *testing.T) {
-	router := setupRouter()
+	router := SetupRouter()
 
 	server.Host = "1.1.1.1"
 	server.Port = 1234
@@ -61,7 +61,7 @@ func TestUpdateServer(t *testing.T) {
 }
 
 func TestUpdateServerWithInvalidBody(t *testing.T) {
-	router := setupRouter()
+	router := SetupRouter()
 
 	server.Host = "1.1.1.1"
 	server.Port = 1234
