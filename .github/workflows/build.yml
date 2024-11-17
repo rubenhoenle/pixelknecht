@@ -23,6 +23,12 @@ jobs:
       - name: Nix flake check
         run: nix flake check
 
+      - name: Build pixelknecht
+        run: nix build .#
+
+      - name: Build commanderer
+        run: nix build .#commanderer
+
   images:
     name: Containerimages
     runs-on: ubuntu-latest
