@@ -22,6 +22,7 @@ function loadData(endpoint) {
       if (endpoint == Endpoint.MODE_API_URL) {
         document.getElementById("enable").checked = data.enabled;
         document.getElementById("imageUrl").value = data.imageUrl;
+        document.getElementById("scaleFactor").value = data.scaleFactor;
         document.getElementById("x").value = data.posX;
         document.getElementById("y").value = data.posY;
 
@@ -95,6 +96,7 @@ function submitServerConfig() {
 function submitModeConfig() {
   const enable = document.getElementById("enable").checked;
   const imageUrl = document.getElementById("imageUrl").value;
+  const scaleFactor = parseFloat(document.getElementById("scaleFactor").value);
   const x = parseInt(document.getElementById("x").value, 10);
   const y = parseInt(document.getElementById("y").value, 10);
 
@@ -102,6 +104,7 @@ function submitModeConfig() {
     enabled: enable,
     posY: y,
     posX: x,
+    scaleFactor: scaleFactor,
     imageUrl: imageUrl,
   };
 
