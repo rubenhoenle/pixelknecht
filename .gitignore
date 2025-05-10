@@ -1,6 +1,5 @@
 result
-
-backend/flix-backend
+pixelknecht
 
 *.png
 *.jpg
@@ -19,7 +18,6 @@ backend/flix-backend
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
-backend/cover.html
 
 # Dependency directories 
 vendor/
