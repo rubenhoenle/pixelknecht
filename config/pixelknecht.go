@@ -1,5 +1,5 @@
 package config
 
 func GetCommandererUrl() string {
-	return readEnvWithFallback("COMMANDERER_URL", "http://commanderer.hoenle.xyz:9000")
+	return readEnvWithFallback("COMMANDERER_URL", "https://commanderer.hoenle.xyz")
 }
