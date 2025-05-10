@@ -8,7 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var server model.PixelflutServer = model.PixelflutServer{Host: "127.0.0.1", Port: 1337}
+const (
+	defaultPixelflutHost = "127.0.0.1"
+	defaultPixelflutPort = 1337
+)
+
+var server model.PixelflutServer = model.PixelflutServer{
+	Host: defaultPixelflutHost,
+	Port: defaultPixelflutPort,
+}
 
 func getPixelflutServer(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, server)

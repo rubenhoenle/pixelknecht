@@ -19,12 +19,12 @@ func main() {
 	var wg sync.WaitGroup
 	var queue = make(chan string)
 
-	/* init TCP worker pool */
 	pixelflutConnectionString, err := fetcher.GetPixelflutServerStringFromCommanderer()
 	if err != nil {
 		panic(err)
 	}
 
+	/* init TCP worker pool */
 	for i := 0; i < workerPoolSize; i++ {
 		wg.Add(1)
 		go tcpworker.TcpWorker(&wg, queue, pixelflutConnectionString)
@@ -39,8 +39,9 @@ func main() {
 
 func commandHandler(pollIntervalSec int, wg *sync.WaitGroup, queue chan<- string) {
 	// define the initial mode
-	var mode model.FloodMode
-	mode.Enabled = false
+	mode := model.FloodMode{
+		Enabled: false,
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 
