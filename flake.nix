@@ -64,6 +64,8 @@
           packages = with pkgs; [
             go
             pixelnuke
+            golangci-lint
+            gnumake
           ];
           shellHook = ''
             export COMMANDERER_URL="http://localhost:9000"
