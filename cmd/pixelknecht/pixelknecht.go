@@ -20,7 +20,11 @@ func main() {
 	var queue = make(chan string)
 
 	/* init TCP worker pool */
-	pixelflutConnectionString := fetcher.GetPixelflutServerStringFromCommanderer()
+	pixelflutConnectionString, err := fetcher.GetPixelflutServerStringFromCommanderer()
+	if err != nil {
+		panic(err)
+	}
+
 	for i := 0; i < workerPoolSize; i++ {
 		wg.Add(1)
 		go tcpworker.TcpWorker(&wg, queue, pixelflutConnectionString)
@@ -42,7 +46,10 @@ func commandHandler(pollIntervalSec int, wg *sync.WaitGroup, queue chan<- string
 
 	for {
 		previousMode := mode
-		mode = fetcher.GetModeFromCommanderer()
+		mode, err := fetcher.GetModeFromCommanderer()
+		if err != nil {
+			panic(err)
+		}
 
 		// check if the mode changed in the meantime, if so, react to it
 		enabledToggled := previousMode.Enabled != mode.Enabled
@@ -71,10 +78,14 @@ func commandHandler(pollIntervalSec int, wg *sync.WaitGroup, queue chan<- string
 
 func draw(ctx context.Context, wg *sync.WaitGroup, queue chan<- string, offsetY int, offsetX int, scaleFactor float64, imageUrl string) {
 	var frames []model.ParsedFloodImage
+	var err error
 	if strings.HasSuffix(strings.ToLower(imageUrl), ".gif") {
-		frames = imgparser.ReadGif(imageUrl)
+		frames, err = imgparser.ReadGif(imageUrl)
 	} else {
-		frames = imgparser.ReadImage(imageUrl, scaleFactor)
+		frames, err = imgparser.ReadImage(imageUrl, scaleFactor)
+	}
+	if err != nil {
+		panic(err)
 	}
 
 	idx, img := 0, frames[0]

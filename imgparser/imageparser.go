@@ -13,20 +13,16 @@ import (
 	"net/http"
 )
 
-func ReadImage(imageURL string, scaleFactor float64) []model.ParsedFloodImage {
+func ReadImage(imageURL string, scaleFactor float64) ([]model.ParsedFloodImage, error) {
 	resp, err := http.Get(imageURL)
 	if err != nil {
-		fmt.Println("Failed to download the image:", err)
-		// TODO: clarify how to do proper error handling here
-		return []model.ParsedFloodImage{}
+		return []model.ParsedFloodImage{}, fmt.Errorf("Failed to download the image: %v", err)
 	}
 	defer resp.Body.Close()
 
 	img, format, err := image.Decode(resp.Body)
 	if err != nil {
-		fmt.Println("Error decoding image:", err)
-		// TODO: clarify how to do proper error handling here
-		return []model.ParsedFloodImage{}
+		return []model.ParsedFloodImage{}, fmt.Errorf("Error decoding image: %v", err)
 	}
 
 	fmt.Printf("Image format: %s\n", format)
@@ -38,23 +34,20 @@ func ReadImage(imageURL string, scaleFactor float64) []model.ParsedFloodImage {
 		img = resize.Resize(newWidth, newHeight, img, resize.Lanczos3)
 	}
 
-	return []model.ParsedFloodImage{parseFrame(img)}
+	return []model.ParsedFloodImage{parseFrame(img)}, nil
 }
 
-func ReadGif(gifURL string) []model.ParsedFloodImage {
+func ReadGif(gifURL string) ([]model.ParsedFloodImage, error) {
 	resp, err := http.Get(gifURL)
 	if err != nil {
-		fmt.Println("Failed to download the image:", err)
-		// TODO: clarify how to do proper error handling here
-		return []model.ParsedFloodImage{}
+		return []model.ParsedFloodImage{}, fmt.Errorf("Failed to download the image: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// Decode the GIF
 	gifImg, err := gif.DecodeAll(resp.Body)
 	if err != nil {
-		fmt.Println("Error decoding GIF:", err)
-		return []model.ParsedFloodImage{}
+		return []model.ParsedFloodImage{}, fmt.Errorf("Error decoding GIF: %v", err)
 	}
 
 	// Get the number of frames
@@ -65,7 +58,7 @@ func ReadGif(gifURL string) []model.ParsedFloodImage {
 	for _, frame := range gifImg.Image {
 		frames = append(frames, parseFrame(frame))
 	}
-	return frames
+	return frames, nil
 }
 
 func parseFrame(img image.Image) model.ParsedFloodImage {
