@@ -8,6 +8,7 @@ import (
 	"github.com/rubenhoenle/pixelknecht/model"
 	"github.com/rubenhoenle/pixelknecht/pkg"
 	"github.com/rubenhoenle/pixelknecht/tcpworker"
+	"math/rand"
 	"strings"
 	"sync"
 	"time"
@@ -40,9 +41,11 @@ func main() {
 
 func commandHandler(pollIntervalSec int, wg *sync.WaitGroup, queue chan<- string) {
 	// define the initial mode
-	mode := model.FloodMode{
-		Enabled: false,
-	}
+	/*mode := model.FloodMode{
+		Enabled: true,
+	}*/
+	var mode model.FloodMode
+	mode.Enabled = false
 
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -80,6 +83,15 @@ func commandHandler(pollIntervalSec int, wg *sync.WaitGroup, queue chan<- string
 	}
 }
 
+func generator(ch chan string, offsetY int, offsetX int, heightPx int, widthPx int, img model.ParsedFloodImage) {
+	for {
+		x := rand.Intn(widthPx)
+		y := rand.Intn(heightPx)
+		cmd := fmt.Sprintf("PX %d %d %s\n", x+offsetX, y+offsetY, img.Pixels[y*img.WidthPX+x])
+		ch <- cmd
+	}
+}
+
 func draw(ctx context.Context, wg *sync.WaitGroup, queue chan<- string, offsetY int, offsetX int, scaleFactor float64, imageUrl string) {
 	var frames []model.ParsedFloodImage
 	var err error
@@ -94,25 +106,37 @@ func draw(ctx context.Context, wg *sync.WaitGroup, queue chan<- string, offsetY 
 	}
 
 	idx, img := 0, frames[0]
+
+	ch := make(chan string, 200)
+	go generator(ch, offsetY, offsetX, img.HeightPX, img.WidthPX, img)
+
+	multipleFrames := len(frames) > 1
+	//cmd := ""
 	for {
 		select {
 		case <-ctx.Done(): // if cancel() execute
 			wg.Done()
 			return
 		default:
-			for y := 0; y < img.HeightPX; y++ {
+			/*for y := 0; y < img.HeightPX; y++ {
 				for x := 0; x < img.WidthPX; x++ {
 					cmd := fmt.Sprintf("PX %d %d %s\n", x+offsetX, y+offsetY, img.Pixels[y*img.WidthPX+x])
 					queue <- cmd
 				}
+			}*/
+			for i := 0; i < 100; i++ {
+				cmd := <-ch
+				queue <- cmd
 			}
 
-			// go to next frame
-			idx++
-			if idx >= len(frames) {
-				idx = 0
+			if multipleFrames {
+				// go to next frame
+				idx++
+				if idx >= len(frames) {
+					idx = 0
+				}
+				img = frames[idx]
 			}
-			img = frames[idx]
 		}
 	}
 }
