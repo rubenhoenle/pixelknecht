@@ -21,6 +21,7 @@ func main() {
 
 	pixelflutConnectionString, err := fetcher.GetPixelflutServerStringFromCommanderer()
 	if err != nil {
+		fmt.Println("Error:", err)
 		panic(err)
 	}
 
@@ -46,9 +47,11 @@ func commandHandler(pollIntervalSec int, wg *sync.WaitGroup, queue chan<- string
 	ctx, cancel := context.WithCancel(context.Background())
 
 	for {
+		var err error
 		previousMode := mode
-		mode, err := fetcher.GetModeFromCommanderer()
+		mode, err = fetcher.GetModeFromCommanderer()
 		if err != nil {
+			fmt.Println("Error:", err)
 			panic(err)
 		}
 
@@ -86,6 +89,7 @@ func draw(ctx context.Context, wg *sync.WaitGroup, queue chan<- string, offsetY 
 		frames, err = imgparser.ReadImage(imageUrl, scaleFactor)
 	}
 	if err != nil {
+		fmt.Println("Error:", err)
 		panic(err)
 	}
 
