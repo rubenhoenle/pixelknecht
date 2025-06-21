@@ -9,3 +9,9 @@ test:
 
 lint:
 	@golangci-lint run
+
+trivy:
+	@trivy fs .
+
+update:
+	@go get -u ./...

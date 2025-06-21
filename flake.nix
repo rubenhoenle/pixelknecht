@@ -66,6 +66,7 @@
             pixelnuke
             golangci-lint
             gnumake
+            trivy
           ];
           shellHook = ''
             export COMMANDERER_URL="http://localhost:9000"
